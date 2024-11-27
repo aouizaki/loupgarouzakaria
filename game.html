@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Roles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #10141e;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            text-align: center;
+            padding: 50px;
+            margin: 0;
+        }
+
+        .all {
+            display: block;
+            margin: auto;
+            background: rgb(255, 0, 0);
+            padding: 50px 40px;
+            border-radius: 50px;
+            font-family: 'Courier New', Courier, monospace;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        h3 {
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+
+        .role-image {
+            max-width: 200px;
+            margin-bottom: 20px;
+            display: none; /* Initially hide the image */
+        }
+
+        .btn-next, .btn-show-role {
+            background-color: #000000;
+            color: white;
+            padding: 12px 25px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn-next:hover, .btn-show-role:hover {
+            background-color: #035c99;
+        }
+    </style>
+</head>
+<body>
+    <div class="all">
+        <h1></h1>
+        <div class="role-container">
+            <img id="roleImage" class="role-image" src="" alt="Role Image" />
+            <h3 id="roleName">Press Next to get a role</h3>
+        </div>
+        <button class="btn-next" id="nextButton">Next</button>
+        <button class="btn-show-role" id="showRoleButton" style="display: none;">Show Role</button>
+    </div>
+
+    <script>
+        // Get roles from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const roleData = {};
+
+        urlParams.forEach((value, key) => {
+            roleData[key] = parseInt(value, 10);
+        });
+
+        const roles = Object.keys(roleData);
+        let allRoles = [];
+
+        // Populate the roles array based on counts
+        roles.forEach(role => {
+            for (let i = 0; i < roleData[role]; i++) {
+                allRoles.push(role);
+            }
+        });
+
+        // Shuffle the roles array
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        shuffle(allRoles);
+
+        let currentRoleIndex = 0;
+
+        // Function to show the next role
+        function showNextRole() {
+            if (currentRoleIndex < allRoles.length) {
+                const role = allRoles[currentRoleIndex];
+                document.getElementById('roleName').innerText = "Show Role";
+                document.getElementById('roleImage').style.display = 'none'; // Hide the image initially
+                document.getElementById('roleImage').src = `${role}.png`;
+                document.getElementById('showRoleButton').style.display = 'inline-block'; // Show "Show Role" button
+                document.getElementById('nextButton').disabled = true; // Disable "Next" button
+            } else {
+                document.getElementById('roleName').innerText = "All roles have been selected";
+                document.getElementById('nextButton').disabled = true;
+                document.getElementById('roleImage').style.display = 'none';
+                document.getElementById('showRoleButton').style.display = 'none';
+            }
+        }
+
+        // Function to reveal the current role
+        document.getElementById('showRoleButton').addEventListener('click', () => {
+            const roleImage = document.getElementById('roleImage');
+            roleImage.style.display = 'block'; // Show the image
+            document.getElementById('roleName').innerText = allRoles[currentRoleIndex];
+            document.getElementById('nextButton').disabled = false; // Enable "Next" button
+            document.getElementById('showRoleButton').style.display = 'none'; // Hide "Show Role" button
+        });
+
+        // "Next" button functionality
+        document.getElementById('nextButton').addEventListener('click', () => {
+            currentRoleIndex++;
+            showNextRole();
+        });
+
+        // Initialize the first role
+        showNextRole();
+    </script>
+</body>
+</html>
